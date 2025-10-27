@@ -1,8 +1,8 @@
 # daniel-birds-project
-````markdown
+
 # 🪶 Projeto Daniel Birds
 
-Um programa em Python criado por **Manu e Dani (com apoio de Ric 💗)** para gerar um baralho ideal de aves baseado em proporções definidas por grupos de características.  
+Um programa em Python criado por **Manu e Dani (com apoio de Rick 💗)** para gerar um baralho ideal de aves baseado em proporções definidas por grupos de características.  
 O sistema usa **Recozimento Simulado (Simulated Annealing)** para buscar automaticamente uma combinação equilibrada de aves que respeite as proporções desejadas.
 
 ---

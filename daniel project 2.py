@@ -222,7 +222,7 @@ def menu_principal(caminho_csv):
         return
     while True:
         print("\n===== BEM-VINDA(O) AO PROJETO DANIEL BIRDS =====")
-        print("\n -Feito com 💗 por Manu e Dani com apoio de Ric")
+        print("\n -Feito com 💗 por Manu e Dani com apoio de Rick")
         print("\n Agora escolha uma das opções pô:")
         print("1. Gerar baralho ideal automaticamente")
         print("2. Sair")
