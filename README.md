@@ -61,7 +61,7 @@ Digite o caminho do arquivo completo com /
 ```
 ===== BEM-VINDA(O) AO PROJETO DANIEL BIRDS =====
 
- -Feito com 💗 por Manu e Dani com apoio de Ric
+ -Feito com 💗 por Manu e Dani com apoio de Rick
 
  Agora escolha uma das opções pô:
 1. Gerar baralho ideal automaticamente
@@ -142,18 +142,18 @@ Exemplo:
 ## 🪄 Créditos
 
 **Desenvolvido por:**
-👩‍💻 Manu (Bixcoito)
+👩‍💻 Manu
 👨‍💻 Dani
-🐧 Apoio moral: Ric
+🐧 Apoio moral: Rick
 
-> Projeto feito com amor, improviso e alguns pombos aleatórios.
+> Projeto feito com amor, improviso e alguns pombos aleatórios Pruu.
 
 ---
 
 ## 🧰 Requisitos
 
 * Python 3.8+
-* Nenhuma biblioteca externa (apenas `csv`, `math`, `random`, `time`)
+* Nenhuma biblioteca externa (apenas `csv`, `math`& `random`)
 
 ---
 
