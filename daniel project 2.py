@@ -1,7 +1,6 @@
 import csv
 import random
 import math
-import time
 
 # ==== CONFIGURAÇÕES DE GRUPOS ====
 GRUPOS = {
