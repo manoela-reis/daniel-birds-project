@@ -7,6 +7,22 @@ O sistema usa **Recozimento Simulado (Simulated Annealing)** para buscar automat
 
 ---
 
+## 🎲 Sobre o projeto
+
+Este programa foi desenvolvido inspirado nas **regras e mecânicas do jogo de tabuleiro _Wingspan_**, criado por **Elizabeth Hargrave** e publicado pela **Stonemaier Games**.
+
+**Wingspan** é um jogo estratégico de construção de motores, em que os jogadores competem para atrair e cuidar das aves mais incríveis em seus habitats naturais.  
+Cada ave possui **características específicas**, como tipo de ninho, alimentação, habitat e efeitos especiais, que influenciam diretamente o equilíbrio do ecossistema e a pontuação final.
+
+O propósito deste código é **simular a montagem equilibrada de um baralho de aves**, respeitando as proporções de características conforme as regras e a distribuição original do jogo.
+
+🪶 A base de dados com as aves e suas características pode ser obtida neste link oficial do **BoardGameGeek**:  
+👉 [Wingspan – Spreadsheet (Bird Cards, Bonus Cards, End of Round Goals)](https://boardgamegeek.com/filepage/193164/wingspan-spreadsheet-bird-cards-bonus-cards-end-of)
+
+Essa planilha contém todas as informações originais das aves do jogo, utilizadas para gerar os baralhos equilibrados neste programa.
+
+---
+
 ## ⚙️ Funcionalidades
 
 - Leitura de um arquivo `.csv` com os dados das aves e suas características.  
