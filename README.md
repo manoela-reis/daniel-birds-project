@@ -142,9 +142,9 @@ Exemplo:
 ## 🪄 Créditos
 
 **Desenvolvido por:**
-👩‍💻 Manu
-👨‍💻 Dani
-🐧 Apoio moral: Rick
+🕊️ Manu
+🦅 Dani
+🦜 Apoio moral: Rick
 
 > Projeto feito com amor, improviso e alguns pombos aleatórios Pruu.
 
