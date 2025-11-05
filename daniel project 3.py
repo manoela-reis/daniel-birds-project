@@ -1,6 +1,9 @@
 import csv
 import random
 import math
+import sys
+
+#no export
 
 # ==== CONFIGURAÇÕES DE GRUPOS ====
 GRUPOS = {
@@ -14,8 +17,6 @@ GRUPOS = {
 # ==== CARACTERÍSTICAS INDIVIDUAIS (fora dos grupos) ====
 CARACTERISTICAS_INDIVIDUAIS = [8, 9, 10, 18, 25, 26, 27, 28, 29, 30]
 
-# == PRIMEIRA VEZ ===
-PRIMEIRA_VEZ = 1
 # ==== CONFIGURAÇÃO SIMULATED ANNEALING ====
 SA_ITERATIONS = 50000  
 SA_T_INITIAL = 1.0
@@ -44,7 +45,7 @@ def contar_proporcao(linhas, col_id):
 def solicitar_proporcoes_alvo_grupos():
     proporcoes_grupos_input = {}
     print("\n--- Definição de PROPORÇÃO ALVO (%) por Grupo ---")
-    for nome_grupo in sorted(GRUPOS.keys()): 
+    for nome_grupo in sorted(GRUPOS.keys()):
         while True:
             try:
                 prop = float(input(f"Proporção ALVO (%) para o GRUPO '{nome_grupo.upper()}' (IDs: {GRUPOS[nome_grupo]}): ").strip())
@@ -59,7 +60,6 @@ def solicitar_proporcoes_alvo_grupos():
 
 
 def solicitar_tolerancia():
-    """Pergunta ao usuário a tolerância (em %)"""
     while True:
         try:
             tolerancia = float(input("\nQual tolerância desejada (em %)? "))
@@ -72,9 +72,8 @@ def solicitar_tolerancia():
 
 
 def perguntar_modo_saida():
-    """Pergunta se o usuário quer ver o baralho final ou as cartas a retirar"""
     while True:
-        modo = input("\nDeseja ver o resultado como:\n1. Baralho ideal completo\n2. Cartas a serem RETIRADAS do baralho total\nEscolha 1 ou 2: ").strip()
+        modo = input("\nDeseja ver o resultado como:\n1. Baralho completo\n2. Apenas aves adicionadas além das obrigatórias\nEscolha 1 ou 2: ").strip()
         if modo in ["1", "2"]:
             return modo
         print("⚠️ Opção inválida. Digite 1 ou 2.")
@@ -96,15 +95,20 @@ def calcular_energia(baralho, proporcoes_alvo_caracteristica, total_aves):
 
 
 # ==== INICIALIZAÇÃO ====
-def inicializar_baralho(linhas, total_aves, proporcoes_alvo_caracteristica):
-    baralho_set = set()
+def inicializar_baralho(linhas, total_aves, proporcoes_alvo_caracteristica, must_include):
+    baralho_set = set(tuple(l) for l in must_include)
+
+    # garante presença de características individuais
     for col_id in CARACTERISTICAS_INDIVIDUAIS:
-        candidatos = [linha for linha in linhas if linha[col_id - 1].strip().upper() == "X"]
+        candidatos = [linha for linha in linhas if linha[col_id - 1].strip().upper() == "X" and tuple(linha) not in baralho_set]
         if candidatos:
             baralho_set.add(tuple(random.choice(candidatos)))
+
+    # completa o baralho até o tamanho total
     linhas_restantes = [linha for linha in linhas if tuple(linha) not in baralho_set]
     aves_faltando = total_aves - len(baralho_set)
     proporcoes_ordenadas = sorted(proporcoes_alvo_caracteristica.items(), key=lambda x: x[1], reverse=True)
+
     adicoes = 0
     while adicoes < aves_faltando and linhas_restantes:
         feature_prioritaria = proporcoes_ordenadas[0][0]
@@ -116,24 +120,26 @@ def inicializar_baralho(linhas, total_aves, proporcoes_alvo_caracteristica):
         baralho_set.add(tuple(escolhido))
         linhas_restantes.remove(escolhido)
         adicoes += 1
+
     baralho = [list(x) for x in baralho_set]
     random.shuffle(baralho)
     return baralho if len(baralho) == total_aves else None
 
 
 # ==== GERAR VIZINHO ====
-def gerar_vizinho(baralho, todas_linhas_tuple, total_aves):
+def gerar_vizinho(baralho, todas_linhas_tuple, must_include_set):
     baralho_tuple = {tuple(l) for l in baralho}
-    aves_incluidas = list(baralho_tuple)
-    aves_nao_incluidas = [l for l in todas_linhas_tuple if l not in baralho_tuple]
+    aves_incluidas = [l for l in baralho_tuple if l not in must_include_set]
+    aves_nao_incluidas = [l for l in todas_linhas_tuple if l not in baralho_tuple and l not in must_include_set]
+
     if not aves_incluidas or not aves_nao_incluidas:
-        return None 
-    pombo_removido = random.choice(aves_incluidas)
-    pombo_adicionado = random.choice(aves_nao_incluidas)
-    novo_baralho_set = baralho_tuple - {pombo_removido}
-    novo_baralho_set.add(pombo_adicionado)
-    novo_baralho = [list(l) for l in novo_baralho_set]
-    return novo_baralho
+        return None
+
+    removida = random.choice(aves_incluidas)
+    adicionada = random.choice(aves_nao_incluidas)
+
+    novo_baralho = list((baralho_tuple - {removida}) | {adicionada} | must_include_set)
+    return [list(l) for l in novo_baralho]
 
 
 # ==== VERIFICAÇÃO FINAL ====
@@ -148,6 +154,7 @@ def verificar_resultado_final(baralho_final, proporcoes_alvo_caracteristica, tol
                 break
         if not sucesso_grupos:
             break
+
     todas_presentes = True
     for col_id in CARACTERISTICAS_INDIVIDUAIS:
         prop_obtida = contar_proporcao(baralho_final, col_id)
@@ -158,22 +165,25 @@ def verificar_resultado_final(baralho_final, proporcoes_alvo_caracteristica, tol
 
 
 # ==== EXIBIÇÃO ====
-def exibir_resultados_sa(baralho_final, linhas_totais, proporcoes_grupos_input, proporcoes_alvo_caracteristica, tolerancia, modo_saida):
+def exibir_resultados(baralho_final, linhas_totais, proporcoes_grupos_input, proporcoes_alvo_caracteristica, tolerancia, modo_saida, must_include):
     print(f"\n✅ Baralho final gerado com {len(baralho_final)} aves!")
+    baralho_final_set = {tuple(l) for l in baralho_final}
+    must_include_set = {tuple(l) for l in must_include}
+
     if modo_saida == "1":
         print("\n🕊️ Pássaros incluídos:")
         for linha in baralho_final:
             print(f" - {linha[0]}")
     else:
-        print("\n🪶 Cartas a serem RETIRADAS do baralho total:")
-        baralho_final_set = {tuple(l) for l in baralho_final}
-        retiradas = [linha for linha in linhas_totais if tuple(linha) not in baralho_final_set]
-        for linha in retiradas:
+        print("\n🪶 Pássaros adicionados além dos obrigatórios:")
+        adicionais = [linha for linha in baralho_final if tuple(linha) not in must_include_set]
+        for linha in adicionais:
             print(f" - {linha[0]}")
+
     print("\n--- RESULTADOS DE PROPORÇÕES ---")
     for nome, ids in GRUPOS.items():
-        prop_grupo_alvo_feature = proporcoes_grupos_input.get(nome, 0.0)
-        print(f"\nGRUPO '{nome.upper()}' (Alvo por Feature: {prop_grupo_alvo_feature:.2f}%):")
+        prop_grupo_alvo = proporcoes_grupos_input.get(nome, 0.0)
+        print(f"\nGRUPO '{nome.upper()}' (Alvo por Feature: {prop_grupo_alvo:.2f}%):")
         for col_id in ids:
             desejada = proporcoes_alvo_caracteristica.get(col_id, 0.0)
             prop_obtida = contar_proporcao(baralho_final, col_id)
@@ -181,23 +191,28 @@ def exibir_resultados_sa(baralho_final, linhas_totais, proporcoes_grupos_input, 
             print(f"  - {col_id}: {prop_obtida:.1f}% (alvo {desejada:.1f}%) {status_check}")
 
 
-# ==== GERAR BARALHO IDEAL ====
-def gerar_baralho_ideal(linhas, total_aves):
+# ==== GERAÇÃO DO BARALHO ====
+def gerar_baralho(header, linhas, must_include, total_aves):
     tolerancia = solicitar_tolerancia()
     modo_saida = perguntar_modo_saida()
     proporcoes_grupos_input = solicitar_proporcoes_alvo_grupos()
     proporcoes_alvo_caracteristica = {col_id: prop for nome, prop in proporcoes_grupos_input.items() for col_id in GRUPOS[nome]}
+
     todas_linhas_tuple = [tuple(l) for l in linhas]
-    baralho_atual = inicializar_baralho(linhas, total_aves, proporcoes_alvo_caracteristica)
+    must_include_set = {tuple(l) for l in must_include}
+
+    baralho_atual = inicializar_baralho(linhas, total_aves, proporcoes_alvo_caracteristica, must_include)
     if baralho_atual is None:
         print("❌ Não foi possível inicializar o baralho.")
         return
+
     energia_atual = calcular_energia(baralho_atual, proporcoes_alvo_caracteristica, total_aves)
     melhor_baralho = list(baralho_atual)
     melhor_energia = energia_atual
     T = SA_T_INITIAL
+
     for i in range(SA_ITERATIONS):
-        vizinho = gerar_vizinho(baralho_atual, todas_linhas_tuple, total_aves)
+        vizinho = gerar_vizinho(baralho_atual, todas_linhas_tuple, must_include_set)
         if vizinho is None:
             continue
         energia_vizinho = calcular_energia(vizinho, proporcoes_alvo_caracteristica, total_aves)
@@ -209,61 +224,29 @@ def gerar_baralho_ideal(linhas, total_aves):
             melhor_baralho = list(baralho_atual)
             if verificar_resultado_final(melhor_baralho, proporcoes_alvo_caracteristica, tolerancia):
                 print(f"\n🎉 Baralho ideal encontrado após {i+1} iterações.")
-                return exibir_resultados_sa(melhor_baralho, linhas, proporcoes_grupos_input, proporcoes_alvo_caracteristica, tolerancia, modo_saida)
+                return exibir_resultados(melhor_baralho, linhas, proporcoes_grupos_input, proporcoes_alvo_caracteristica, tolerancia, modo_saida, must_include)
         T *= SA_T_COOLING_RATE
+
     print("\n⚠️ Nenhum baralho perfeito foi encontrado.")
-    exibir_resultados_sa(melhor_baralho, linhas, proporcoes_grupos_input, proporcoes_alvo_caracteristica, tolerancia, modo_saida)
+    exibir_resultados(melhor_baralho, linhas, proporcoes_grupos_input, proporcoes_alvo_caracteristica, tolerancia, modo_saida, must_include)
 
-
-# ==== MENU ====
-def menu_principal(caminho_csv):
-    try:
-        header, linhas = carregar_csv(caminho_csv)
-    except FileNotFoundError:
-        print(f"\n❌ ERRO: Arquivo não encontrado: {caminho_csv}")
-        return
-    while True:
-        print("\n===== BEM-VINDA(O) AO PROJETO DANIEL BIRDS =====")
-        print("\n -Feito com 💗 por Manu e Dani com apoio de Rick")
-        print("\n Agora escolha uma das opções pô:")
-        print("1. Gerar baralho ideal automaticamente")
-        print("2. Sair")
-        opcao = input("Escolha uma opção: ").strip()
-        if opcao == "1":
-            total = int(input("Quantas aves o baralho deve ter? "))
-            gerar_baralho_ideal(linhas, total)
-        elif opcao == "2":
-            print("👋 Valeu valeu valeu valeu valeu valeu")
-            break
-        else:
-            print("⚠️ Escolhe certo Pomba!")
-
-def menu_principal_primeiro(caminho_csv):
-    PRIMEIRA_VEZ=0
-    try:
-        header, linhas = carregar_csv(caminho_csv)
-    except FileNotFoundError:
-        print(f"\n❌ ERRO: Arquivo não encontrado: {caminho_csv}")
-        return
-
-    print("\n===== BEM-VINDA(O) AO PROJETO DANIEL BIRDS =====")
-    print("\n -Feito com 💗 por Manu e Dani com apoio de Rick")
-    print("\n Agora escolha uma das opções pô:")
-    print("1. Gerar baralho ideal automaticamente")
-    print("2. Sair")
-    opcao = input("Escolha uma opção: ").strip()
-    if opcao == "1":
-        total = int(input("Quantas aves o baralho deve ter? "))
-        gerar_baralho_ideal(linhas, total)
-    elif opcao == "2":
-        print("👋 Valeu valeu valeu valeu valeu valeu")
-    else:
-        print("⚠️ Escolhe certo Pomba!")
 
 # ==== EXECUÇÃO ====
 if __name__ == "__main__":
-    caminho = input("\nDigite o caminho do arquivo completo com /")
-    if(PRIMEIRA_VEZ):
-        menu_principal_primeiro(caminho)
-    else:
-        menu_principal(caminho)
+    print("\n===== 🕊️ BEM-VINDO AO PROJETO DANIEL BIRDS 2.1 =====")
+    caminho = input("\nDigite o caminho completo do arquivo CSV com todas as aves: ").strip()
+
+    try:
+        header, linhas = carregar_csv(caminho)
+    except FileNotFoundError:
+        print("❌ Arquivo não encontrado. Verifique o caminho e tente novamente.")
+        exit()
+
+    print("\nCole abaixo (direto do Excel) os nomes das aves obrigatórias (uma por linha):")
+    print("(Quando terminar, pressione ENTER em branco e depois CTRL+D no Linux/macOS ou CTRL+Z no Windows)\n")
+    aves_obrigatorias = sys.stdin.read().strip().splitlines()
+
+    must_include = [l for l in linhas if l[0].strip().lower() in [a.strip().lower() for a in aves_obrigatorias]]
+
+    total = int(input("\nQuantas aves o baralho deve ter no total? "))
+    gerar_baralho(header, linhas, must_include, total)
