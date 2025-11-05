@@ -2,21 +2,21 @@
 
 # 🪶 Projeto Daniel Birds
 
-Um programa em Python criado por **Manu e Dani (com apoio de Rick 💗)** para gerar um baralho ideal de aves baseado em proporções definidas por grupos de características.  
+Um programa em Python criado por **Manu e Dani (com apoio de Rick 💗)** para gerar um baralho ideal de aves baseado em proporções definidas por grupos de características.
 O sistema usa **Recozimento Simulado (Simulated Annealing)** para buscar automaticamente uma combinação equilibrada de aves que respeite as proporções desejadas.
 
 ---
 
 ## 🎲 Sobre o projeto
 
-Este programa foi desenvolvido inspirado nas **regras e mecânicas do jogo de tabuleiro _Wingspan_**, criado por **Elizabeth Hargrave** e publicado pela **Stonemaier Games**.
+Este programa foi desenvolvido inspirado nas **regras e mecânicas do jogo de tabuleiro *Wingspan***, criado por **Elizabeth Hargrave** e publicado pela **Stonemaier Games**.
 
-**Wingspan** é um jogo estratégico de construção de motores, em que os jogadores competem para atrair e cuidar das aves mais incríveis em seus habitats naturais.  
+**Wingspan** é um jogo estratégico de construção de motores, em que os jogadores competem para atrair e cuidar das aves mais incríveis em seus habitats naturais.
 Cada ave possui **características específicas**, como tipo de ninho, alimentação, habitat e efeitos especiais, que influenciam diretamente o equilíbrio do ecossistema e a pontuação final.
 
 O propósito deste código é **simular a montagem equilibrada de um baralho de aves**, respeitando as proporções de características conforme as regras e a distribuição original do jogo.
 
-🪶 A base de dados com as aves e suas características pode ser obtida neste link oficial do **BoardGameGeek**:  
+🪶 A base de dados com as aves e suas características pode ser obtida neste link oficial do **BoardGameGeek**:
 👉 [Wingspan – Spreadsheet (Bird Cards, Bonus Cards, End of Round Goals)](https://boardgamegeek.com/filepage/193164/wingspan-spreadsheet-bird-cards-bonus-cards-end-of)
 
 Essa planilha contém todas as informações originais das aves do jogo, utilizadas para gerar os baralhos equilibrados neste programa.
@@ -25,14 +25,16 @@ Essa planilha contém todas as informações originais das aves do jogo, utiliza
 
 ## ⚙️ Funcionalidades
 
-- Leitura de um arquivo `.csv` com os dados das aves e suas características.  
-- Geração de um **baralho ideal** que respeita as proporções definidas para cada grupo.  
-- Inclusão obrigatória de características individuais específicas.  
-- Ajuste fino de tolerância de proporções (%).  
-- Opção de visualizar:
-  - O **baralho final completo**, ou  
-  - As **aves que devem ser retiradas** do conjunto total.  
-- Feedback detalhado das proporções alcançadas por grupo.  
+* Leitura de um arquivo `.csv` com os dados das aves e suas características.
+* Geração de um **baralho ideal** que respeita as proporções definidas para cada grupo.
+* Inclusão obrigatória de **aves específicas**, colando seus nomes diretamente do **Excel** — a lista de `must_include`.
+* Ajuste fino de **tolerância** de proporções (%).
+* Opção de visualizar:
+
+  * O **baralho final completo**, ou
+  * As **aves adicionadas além das obrigatórias**.
+* Feedback detalhado das proporções alcançadas por grupo.
+* 💾 **Exportação opcional em CSV** com o baralho final.
 
 ---
 
@@ -40,15 +42,15 @@ Essa planilha contém todas as informações originais das aves do jogo, utiliza
 
 O programa trabalha com **grupos de características** definidos por IDs de coluna no arquivo CSV:
 
-| Grupo | IDs de Características |
-|-------|------------------------|
-| TAMANHO E COR | 11, 12, 13 |
-| TIPO DE NINHO | 14, 15, 16, 17 |
-| 2 PONTOS | 19, 20, 21, 22 |
-| GEOGRAFIA | 23, 24 |
-| HABITATS | 5, 6, 7 |
+| Grupo         | IDs de Características |
+| ------------- | ---------------------- |
+| TAMANHO E COR | 11, 12, 13             |
+| TIPO DE NINHO | 14, 15, 16, 17         |
+| 2 PONTOS      | 19, 20, 21, 22         |
+| GEOGRAFIA     | 23, 24                 |
+| HABITATS      | 5, 6, 7                |
 
-Além disso, o código também exige a presença das seguintes **características individuais** (IDs fixos):  
+Além disso, o código também exige a presença das seguintes **características individuais** (IDs fixos):
 `8, 9, 10, 18, 25, 26, 27, 28, 29, 30`.
 
 ---
@@ -60,31 +62,33 @@ Além disso, o código também exige a presença das seguintes **característica
 No terminal, rode:
 
 ```bash
-python "daniel project 2.py"
-````
+python "daniel project_3.1_with_export.py"
+```
 
 ### 2. Inserir o caminho do arquivo CSV
 
 Digite o **caminho completo** (ou apenas o nome, se estiver na mesma pasta):
 
 ```
-Digite o caminho do arquivo completo com /
+Digite o caminho completo do arquivo CSV com todas as aves:  
 > /Users/Manoela/Downloads/passarinhos.csv
 ```
 
-### 3. Escolher uma opção no menu
+### 3. Adicionar aves obrigatórias (must_include)
+
+Copie e cole diretamente do Excel os nomes das aves que **devem obrigatoriamente** estar no baralho final.
+Quando terminar, pressione **ENTER** em branco e depois **CTRL+D** (Linux/macOS) ou **CTRL+Z** (Windows):
 
 ```
-===== BEM-VINDA(O) AO PROJETO DANIEL BIRDS =====
+Cole abaixo (direto do Excel) os nomes das aves obrigatórias (uma por linha):  
+Coruja-das-torres  
+Pica-pau-verde  
+Beija-flor  
 
- -Feito com 💗 por Manu e Dani com apoio de Rick
-
- Agora escolha uma das opções pô:
-1. Gerar baralho ideal automaticamente
-2. Sair
+(ENTER + CTRL+D para continuar)
 ```
 
-Selecione **1** para gerar o baralho.
+Essas aves serão incluídas automaticamente no baralho final.
 
 ---
 
@@ -98,7 +102,7 @@ Durante a execução, o programa solicitará:
 2. **Modo de saída**
 
    * `1` → Mostrar o **baralho final completo**
-   * `2` → Mostrar **as cartas a retirar** do conjunto total
+   * `2` → Mostrar **apenas as aves adicionadas além das obrigatórias**
 
 3. **Proporção alvo (%)** para cada grupo de características.
    Exemplo:
@@ -109,7 +113,8 @@ Durante a execução, o programa solicitará:
 
 4. **Número total de aves** no baralho.
 
-O sistema então executa o **Simulated Annealing** (SA) para encontrar a melhor combinação.
+5. **Deseja exportar o resultado em CSV?**
+   Ao final, o programa perguntará se você quer gerar automaticamente um arquivo `.csv` com o baralho final.
 
 ---
 
@@ -117,16 +122,18 @@ O sistema então executa o **Simulated Annealing** (SA) para encontrar a melhor 
 
 O programa exibirá:
 
-* ✅ As aves incluídas ou a retirar (dependendo do modo escolhido)
+* ✅ As aves incluídas ou adicionadas além das obrigatórias
 * 📈 O resultado das proporções alcançadas por grupo
+* 🐦 As aves obrigatórias garantidas no baralho
 * ⚠️ Alertas se alguma característica ficou fora da tolerância
 * 🎉 Mensagem de sucesso se todas as condições forem cumpridas
+* 💾 Geração opcional de um arquivo `baralho_final.csv`
 
 ---
 
 ## 🧠 Como o algoritmo funciona
 
-O método de **Recozimento Simulado** (Simulated Annealing) busca otimizar a composição do baralho com base em:
+O método de **Recozimento Simulado** (*Simulated Annealing*) busca otimizar a composição do baralho com base em:
 
 * **Função de energia:** mede o desvio entre as proporções obtidas e as desejadas.
 * **Trocas aleatórias controladas:** aves são substituídas gradualmente para reduzir o erro total.
@@ -169,41 +176,50 @@ Exemplo:
 ## 🧰 Requisitos
 
 * Python 3.8+
-* Nenhuma biblioteca externa (apenas `csv`, `math`& `random`)
+* Nenhuma biblioteca externa (apenas `csv`, `math`, `random` e `sys`)
 
 ---
 
 ## 💬 Exemplo de execução
 
 ```
-Digite o caminho do arquivo completo com /
-> passarinhos.csv
+Digite o caminho completo do arquivo CSV com todas as aves:  
+> passarinhos.csv  
 
-Quantas aves o baralho deve ter? 120
+Cole abaixo (direto do Excel) os nomes das aves obrigatórias (uma por linha):  
+Coruja-das-torres  
+Beija-flor  
 
-Qual tolerância desejada (em %)? 1.0
+(ENTER + CTRL+D para continuar)  
 
-Deseja ver o resultado como:
-1. Baralho ideal completo
-2. Cartas a serem RETIRADAS do baralho total
-Escolha 1 ou 2: 1
+Quantas aves o baralho deve ter no total? 120  
+
+Qual tolerância desejada (em %)? 1.0  
+
+Deseja ver o resultado como:  
+1. Baralho ideal completo  
+2. Apenas aves adicionadas além das obrigatórias  
+Escolha 1 ou 2: 1  
 ```
 
 Saída esperada:
 
 ```
-🎉 Baralho ideal encontrado após 4389 iterações.
-✅ Baralho final gerado com 120 aves!
-🕊️ Pássaros incluídos:
- - Bird_001
- - Bird_054
- - Bird_302
- ...
+🎉 Baralho ideal encontrado após 4389 iterações.  
+✅ Baralho final gerado com 120 aves!  
+🐦 Aves obrigatórias incluídas com sucesso.  
+🕊️ Pássaros incluídos:  
+ - Bird_001  
+ - Bird_054  
+ - Bird_302  
+ ...  
 
---- RESULTADOS DE PROPORÇÕES ---
-GRUPO 'HABITATS' (Alvo 20.00%)
-  - 5: 19.8% (alvo 20.0%) ✅ OK
-  - 6: 20.1% (alvo 20.0%) ✅ OK
+--- RESULTADOS DE PROPORÇÕES ---  
+GRUPO 'HABITATS' (Alvo 20.00%)  
+  - 5: 19.8% (alvo 20.0%) ✅ OK  
+  - 6: 20.1% (alvo 20.0%) ✅ OK  
+
+💾 Arquivo 'baralho_final.csv' gerado com sucesso!  
 ```
 
 ---
@@ -211,8 +227,17 @@ GRUPO 'HABITATS' (Alvo 20.00%)
 ## 📂 Estrutura do projeto
 
 ```
-daniel project 2.py
-README.md
+daniel project_3.1_with_export.py  
+README.md  
 ```
+
+---
+
+## ✨ Novidades da Versão 3.1
+
+🐦 **Lista `must_include`** — agora é possível colar diretamente do Excel os nomes das aves que devem obrigatoriamente estar no baralho final.
+💾 **Exportação em CSV** — ao final da execução, o programa oferece a opção de gerar automaticamente um arquivo `.csv` com o baralho resultante.
+📊 **Mesma lógica original dos grupos** — mantida a estrutura de balanceamento por grupos de características e proporções alvo.
+💬 **Melhorias gerais na interação** — mensagens mais claras, interface de terminal revisada e execução mais fluida.
 
 
