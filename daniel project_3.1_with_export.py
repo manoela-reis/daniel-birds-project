@@ -293,7 +293,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print("\nCole abaixo (direto do Excel) os nomes das aves obrigatórias (uma por linha):")
-    print("(Quando terminar, pressione ENTER em branco e depois CTRL+D no Linux/macOS ou CTRL+Z no Windows)\n")
+    print("(Quando terminar, pressione ENTER em branco e depois CTRL+Z no Windows)\n")
     aves_obrigatorias = sys.stdin.read().strip().splitlines()
 
     total = int(input("\nQuantas aves o baralho deve ter no total? ").strip())
