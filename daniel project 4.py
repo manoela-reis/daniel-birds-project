@@ -20,6 +20,19 @@ SA_ITERATIONS = 50000
 SA_T_INITIAL = 1.0
 SA_T_COOLING_RATE = 0.9999
 
+def normalizar_caminho(caminho):
+    caminho = caminho.strip()
+
+    # Remove aspas duplas se existirem
+    if caminho.startswith('"') and caminho.endswith('"'):
+        caminho = caminho[1:-1]
+
+    # Converte \ para / (funciona no Windows e no Linux)
+    caminho = caminho.replace("\\", "/")
+
+    return caminho
+
+
 def carregar_csv(caminho_csv):
     with open(caminho_csv, newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -163,10 +176,10 @@ def exibir_resultados_sa(baralho_final, linhas_totais, proporcoes_grupos_input, 
 
     print("\n--- RESULTADOS DE PROPORÇÕES ---")
     for nome, ids in GRUPOS.items():
-        alvo = proporcoes_grupos_input.get(nome, 0.0)
-        obtido = contar_proporcao_grupo(baralho_final, ids)
-        status = "✅ OK" if abs(obtido - alvo) <= tolerancia else "❌ FORA"
-        print(f"\nGRUPO '{nome.upper()}' (alvo {alvo:.1f}% | obtido {obtido:.1f}%): {status}")
+        #alvo = proporcoes_grupos_input.get(nome, 0.0)
+        #obtido = contar_proporcao_grupo(baralho_final, ids)
+        #status = "✅ OK" if abs(obtido - alvo) <= tolerancia else "❌ FORA"
+        print(f"\nGRUPO '{nome.upper()}'")
         for col in ids:
             dese = proporcoes_alvo_caracteristica[col]
             ob = contar_proporcao(baralho_final, col)
@@ -240,7 +253,8 @@ def gerar_baralho(header, linhas, must_include_input, total_aves):
 if __name__ == "__main__":
     while True:
         print("\n===== 🕊️ BEM-VINDO AO PROJETO DANIEL BIRDS (com grupos) =====")
-        caminho = input("\nDigite o caminho completo do arquivo CSV com todas as aves: ").strip()
+        caminho_raw = input("\nDigite o caminho completo do arquivo CSV com todas as aves: ").strip()
+        caminho = normalizar_caminho(caminho_raw)
 
         try:
             header, linhas = carregar_csv(caminho)
@@ -261,5 +275,5 @@ if __name__ == "__main__":
         gerar_baralho(header, linhas, aves_obrigatorias, total)
 
         if input("\nDeseja rodar novamente? (s/n): ").strip().lower() != "s":
-            print("\n🫶 Obrigada por jogar com os passarinhos! Até a próxima!")
+            print("\n🫶 Obrigada por usar! Foi feito com amor de presente para meu melhor amigo Dani <3 Até a próxima!")
             break
