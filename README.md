@@ -12,7 +12,9 @@ O sistema usa **Recozimento Simulado (Simulated Annealing)** para buscar automat
 Este projeto foi feito com muito carinho como um **presente para o meu melhor amigo Dani**,
 uma pessoa apaixonada por **passarinhos**, por **Wingspan**, e por tudo o que envolve mundos construídos com cuidado e beleza.
 
-É um programinha que traduz o amor dele por aves em código — e o meu carinho por ele em cada detalhe. 💛
+É um programinha que traduz o amor dele por aves em código — e o meu carinho por ele e pelo Ric em cada detalhe. 💛
+![20250709_002139](https://github.com/user-attachments/assets/e11868a7-3f8f-46ac-964a-b9a9fe394bba)
+
 
 ---
 
